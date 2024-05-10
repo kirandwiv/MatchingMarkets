@@ -15,6 +15,7 @@ namespace MatchingTest.Models
         {
             // First we create student preferences given the parameters
             List<Student> StudentList = new List<Student>();
+
             for (int i = 0;  i < number_of_students; i++)
             {
                 // For each student, choose random, ordered list of hospitals
@@ -24,6 +25,7 @@ namespace MatchingTest.Models
 
                 // Initiate instance of student
                 Student student = new Student();
+                student.student_id = i;
                 // Add preferences 
                 student.preferences = selectedNumbers;
                 //Add Student to our list of students
@@ -31,7 +33,7 @@ namespace MatchingTest.Models
             }
 
             List<Hospital> HospitalList = new List<Hospital>();
-            for (int i = 0; i < number_of_students; i++)
+            for (int i = 0; i < number_of_hospitals; i++)
             {
                 // For each hospital, choose random, ordered list of students
                 List<int> numbers = Enumerable.Range(0, number_of_hospitals).ToList();
@@ -41,8 +43,10 @@ namespace MatchingTest.Models
 
                 // Create instance of hospital
                 Hospital hospital = new Hospital();
+                hospital.hospital_id = i;
                 // Add Preference
                 hospital.preferences = selectedNumbers;
+                HospitalList.Add(hospital);
             }
             return (StudentList, HospitalList);
         }
