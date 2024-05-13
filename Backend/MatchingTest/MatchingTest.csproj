@@ -8,7 +8,16 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Update="Models\Agents.cs">
+    <Compile Update="Machines\EADAM.cs">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Compile>
+    <Compile Update="Machines\DA.cs">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Compile>
+    <Compile Update="Models\SolutionClasses.cs">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Compile>
+    <Compile Update="Models\AgentClasses.cs">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Compile>
     <Compile Update="Models\PreferenceSet.cs">

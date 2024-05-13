@@ -7,9 +7,9 @@ namespace MatchingTest
     {
         static void Main(string[] args)
         {
-            int number_students = 5000;
-            int number_hospitals = 5000;
-            int depth_of_list = 10;
+            int number_students = 10000;
+            int number_hospitals = 10000;
+            int depth_of_list = 15;
 
             var preference_set = new PreferenceSet();
             var students = new List<Student>();
