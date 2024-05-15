@@ -17,9 +17,13 @@ namespace MatchingTest.Machines
         public (List<Student> StudentList, List<Hospital> HospitalList) solveEADAM(List<Student> students, List<Hospital> hospitals, int depth_of_student_preferences) 
         {
             
-            //Check for Underdemanded Hospitals (hospitals with 0 rejections).
-            //Remove them from hospital list. Also remove the students they are matched to, if any from Student List
-            //Save both to parallel lists! 
+
+            foreach (Hospital hospital in hospitals)
+            {
+
+            }
+
+
 
             //Check for Unmatched Students
             // Remove these students from student list as well.
