@@ -17,8 +17,8 @@ namespace MatchingTest
             var preferences = new Preferences_Result();
 
             var solution = preference_set.GeneratePreferences(number_students, number_hospitals, depth_of_list);
-            students = solution.StudentList;
-            hospitals = solution.HospitalList;
+            students = solution.StudentDict;
+            hospitals = solution.HospitalDict;
             preferences = solution.Preferences;
             Console.WriteLine(string.Join(", ", students[0].preferences));
 
