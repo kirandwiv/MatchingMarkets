@@ -1,7 +1,28 @@
 {
   "Version": 1,
   "WorkspaceRootPath": "C:\\Users\\v-kirdwivedi\\GitHub\\MatchingMarkets\\",
-  "Documents": [],
+  "Documents": [
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\v-kirdwivedi\\GitHub\\MatchingMarkets\\Backend\\MatchingTest\\Program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:Backend\\MatchingTest\\Program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\v-kirdwivedi\\GitHub\\MatchingMarkets\\Backend\\MatchingTest\\Models\\SolutionClasses.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:Backend\\MatchingTest\\Models\\SolutionClasses.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\v-kirdwivedi\\GitHub\\MatchingMarkets\\Backend\\MatchingTest\\Machines\\DA.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:Backend\\MatchingTest\\Machines\\DA.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\v-kirdwivedi\\GitHub\\MatchingMarkets\\Backend\\MatchingTest\\Models\\PreferenceSet.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:Backend\\MatchingTest\\Models\\PreferenceSet.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\v-kirdwivedi\\GitHub\\MatchingMarkets\\Backend\\MatchingTest\\Models\\AgentClasses.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:Backend\\MatchingTest\\Models\\AgentClasses.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    }
+  ],
   "DocumentGroupContainers": [
     {
       "Orientation": 0,
@@ -9,7 +30,7 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": -1,
+          "SelectedChildIndex": 5,
           "Children": [
             {
               "$type": "Bookmark",
@@ -26,6 +47,71 @@
             {
               "$type": "Bookmark",
               "Name": "ST:5:0:{0251bcb7-bf19-4277-a65f-d7efc327bad1}"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "SolutionClasses.cs",
+              "DocumentMoniker": "C:\\Users\\v-kirdwivedi\\GitHub\\MatchingMarkets\\Backend\\MatchingTest\\Models\\SolutionClasses.cs",
+              "RelativeDocumentMoniker": "Backend\\MatchingTest\\Models\\SolutionClasses.cs",
+              "ToolTip": "C:\\Users\\v-kirdwivedi\\GitHub\\MatchingMarkets\\Backend\\MatchingTest\\Models\\SolutionClasses.cs",
+              "RelativeToolTip": "Backend\\MatchingTest\\Models\\SolutionClasses.cs",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAAAwAAAAtAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-05-16T20:22:04.14Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "Program.cs",
+              "DocumentMoniker": "C:\\Users\\v-kirdwivedi\\GitHub\\MatchingMarkets\\Backend\\MatchingTest\\Program.cs",
+              "RelativeDocumentMoniker": "Backend\\MatchingTest\\Program.cs",
+              "ToolTip": "C:\\Users\\v-kirdwivedi\\GitHub\\MatchingMarkets\\Backend\\MatchingTest\\Program.cs",
+              "RelativeToolTip": "Backend\\MatchingTest\\Program.cs",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAABMAAAAfAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-05-16T17:51:17.32Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "DA.cs",
+              "DocumentMoniker": "C:\\Users\\v-kirdwivedi\\GitHub\\MatchingMarkets\\Backend\\MatchingTest\\Machines\\DA.cs",
+              "RelativeDocumentMoniker": "Backend\\MatchingTest\\Machines\\DA.cs",
+              "ToolTip": "C:\\Users\\v-kirdwivedi\\GitHub\\MatchingMarkets\\Backend\\MatchingTest\\Machines\\DA.cs",
+              "RelativeToolTip": "Backend\\MatchingTest\\Machines\\DA.cs",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAALAAAABSAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-05-15T20:20:24.367Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 3,
+              "Title": "PreferenceSet.cs",
+              "DocumentMoniker": "C:\\Users\\v-kirdwivedi\\GitHub\\MatchingMarkets\\Backend\\MatchingTest\\Models\\PreferenceSet.cs",
+              "RelativeDocumentMoniker": "Backend\\MatchingTest\\Models\\PreferenceSet.cs",
+              "ToolTip": "C:\\Users\\v-kirdwivedi\\GitHub\\MatchingMarkets\\Backend\\MatchingTest\\Models\\PreferenceSet.cs",
+              "RelativeToolTip": "Backend\\MatchingTest\\Models\\PreferenceSet.cs",
+              "ViewState": "AQIAAC0AAAAAAAAAAAAAAD4AAAAkAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-05-15T20:09:52.456Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 4,
+              "Title": "AgentClasses.cs",
+              "DocumentMoniker": "C:\\Users\\v-kirdwivedi\\GitHub\\MatchingMarkets\\Backend\\MatchingTest\\Models\\AgentClasses.cs",
+              "RelativeDocumentMoniker": "Backend\\MatchingTest\\Models\\AgentClasses.cs",
+              "ToolTip": "C:\\Users\\v-kirdwivedi\\GitHub\\MatchingMarkets\\Backend\\MatchingTest\\Models\\AgentClasses.cs",
+              "RelativeToolTip": "Backend\\MatchingTest\\Models\\AgentClasses.cs",
+              "ViewState": "AQIAABgAAAAAAAAAAAAAADYAAAA2AAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-05-15T20:09:50.59Z",
+              "EditorCaption": ""
             }
           ]
         }

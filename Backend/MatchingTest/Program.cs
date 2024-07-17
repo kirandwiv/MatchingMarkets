@@ -11,17 +11,22 @@ namespace MatchingTest
             int number_hospitals = 10000;
             int depth_of_list = 15;
 
-            var preference_set = new PreferenceSet();
-            var students = new List<Student>();
-            var hospitals = new List<Hospital>();
+            var preference_set = new RandomPreferenceSet();
+            var students = new Dictionary<int, Student>();
+            var hospitals = new Dictionary<int, Hospital>();
+            var preferences = new Preferences_Result();
 
-            var solution = preference_set.GenerateRandomPreferences(number_students, number_hospitals, depth_of_list);
+            var solution = preference_set.GeneratePreferences(number_students, number_hospitals, depth_of_list);
             students = solution.StudentList;
             hospitals = solution.HospitalList;
-            Console.WriteLine(string.Join(',', hospitals[4999].preferences));
+            preferences = solution.Preferences;
+            Console.WriteLine(string.Join(", ", students[0].preferences));
 
-            var deferred_acceptance = new DA();
-            var DAoutcomes = deferred_acceptance.solveDA(students, hospitals, depth_of_list);
+            var solver = new DA();
+
+            var matching = solver.SolveDAExpress(students, hospitals, depth_of_list, preferences);
+            Console.WriteLine(matching.n_matched);
+            Console.WriteLine(matching.n_iterations);
         }
     }
 }

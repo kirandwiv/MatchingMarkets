@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.Design;
+using System.ComponentModel.Design.Serialization;
 using System.Diagnostics;
 using System.Linq;
 using System.Text;
@@ -13,7 +14,7 @@ namespace MatchingTest.Machines
     {
         public DA() { }
 
-        public DASolution solveDA(List<Student> students, List<Hospital> hospitals, int depth_of_student_preferences) 
+        public DASolution solveDA(List<Student> students, List<Hospital> hospitals, int depth_of_student_preferences)
         {
             bool exhausted = false;
             DASolution solution = new DASolution();
@@ -101,6 +102,76 @@ namespace MatchingTest.Machines
             solution.hospitals = hospitals;
             solution.n_iterations = iteration;
             solution.n_matched = n_matched;
+            return solution;
+        }
+
+        public DASolution SolveDAExpress(Dictionary<int, Student> students, Dictionary<int, Hospital> hospitals, int depth_of_student_preferences, Preferences_Result preferences)
+        {
+            DASolution solution = new DASolution();
+            Dictionary<int, Student> tentatively_unmatched = new Dictionary<int, Student>(students);
+            Dictionary<int, Student> permanently_unmatched = new Dictionary<int, Student>();
+            int iteration = 0;
+
+            while (tentatively_unmatched.Count > 0)
+            {
+                iteration++;
+                Dictionary<int, Student> temp_list = new Dictionary<int, Student>(tentatively_unmatched);
+
+                foreach (var studentEntry in tentatively_unmatched)
+                {
+                    Student student = studentEntry.Value;
+                    temp_list.Remove(student.student_id);
+
+                    if (student.rejections == depth_of_student_preferences)
+                    {
+                        permanently_unmatched.Add(student.student_id, student);
+                        student.permanentely_unmatched = true;
+                        student.match = -1;
+                    }
+                    else
+                    {
+                        int proposes_to = student.preferences[student.rejections];
+                        Hospital relevant_hospital = hospitals[proposes_to];
+                        relevant_hospital.n_proposals_rd += 1;
+
+                        Random random = new Random();
+                        double priority_score = random.NextDouble();
+                        relevant_hospital.priority_map.Add(student.student_id, priority_score);
+
+                        if (relevant_hospital.match == -1)
+                        {
+                            relevant_hospital.match = student.student_id;
+                        }
+                        else
+                        {
+                            double competing_score = relevant_hospital.priority_map[relevant_hospital.match];
+                            if (competing_score < priority_score)
+                            {
+                                Student loser_student = students[relevant_hospital.match];
+                                loser_student.rejections += 1;
+                                temp_list.Add(loser_student.student_id, loser_student);
+
+                                relevant_hospital.match = student.student_id;
+                                relevant_hospital.rejected += 1;
+                            }
+                            else
+                            {
+                                temp_list.Add(student.student_id, student);
+                                student.rejections += 1;
+                                relevant_hospital.rejected += 1;
+                            }
+                        }
+                    }
+                }
+                tentatively_unmatched = new Dictionary<int, Student>(temp_list);
+            }
+
+            solution.hospitals = hospitals.Values.ToList();
+            solution.students = students.Values.ToList();
+            solution.n_iterations = iteration;
+            solution.perma_unmatched = permanently_unmatched.Values.ToList();
+            solution.n_matched = students.Count - permanently_unmatched.Count;
+
             return solution;
         }
     }

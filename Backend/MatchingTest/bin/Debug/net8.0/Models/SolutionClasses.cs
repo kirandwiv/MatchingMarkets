@@ -10,6 +10,7 @@ namespace MatchingTest.Models
         public List<Hospital> hospitals;
         public int n_iterations;
         public int n_matched;
+        public List<Student> perma_unmatched;
 
         public DASolution() { }
 

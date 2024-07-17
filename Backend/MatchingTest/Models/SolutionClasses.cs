@@ -10,8 +10,34 @@ namespace MatchingTest.Models
         public List<Hospital> hospitals;
         public int n_iterations;
         public int n_matched;
+        public List<Student> perma_unmatched;
 
         public DASolution() { }
+
+        public List<(int, int)> GetMatching(List<Student> students)
+        {
+            List<(int, int)> values = new List<(int, int)>();
+            foreach (Student student in students)
+            {
+                if (student.match != -1)
+                {
+                    (int, int) match = (student.match, student.student_id);
+                    values.Add(match);
+                }
+            }
+            return values;
+        }
+    }
+
+    public class EADAMSolution
+    {
+        public List<Student> students;
+        public List<Hospital> hospitals;
+        public int n_iterations;
+        public int n_matched;
+        public DASolution initial_matching;
+
+        public EADAMSolution() { }
 
         public List<(int, int)> GetMatching(List<Student> students)
         {

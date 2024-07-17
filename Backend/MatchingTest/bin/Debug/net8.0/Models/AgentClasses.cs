@@ -45,11 +45,15 @@ namespace MatchingTest.Models
         public int rejected;
         public int n_proposals_rd;
         public int hospital_id;
+        public Dictionary<int, double> priority_map = new Dictionary<int, double>();
+
 
         public Hospital()
         {
             preferences = new List<int>();
             proposals = new List<int>();
+            priority_map = new Dictionary<int, double>();
+            match = -1;
         }
 
         /// <summary>
