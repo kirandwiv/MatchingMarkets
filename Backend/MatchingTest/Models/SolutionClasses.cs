@@ -6,22 +6,22 @@ namespace MatchingTest.Models
 
     public class DASolution
     {
-        public List<Student> students;
-        public List<Hospital> hospitals;
+        public Dictionary<int, Student> students;
+        public Dictionary<int, Hospital> hospitals;
         public int n_iterations;
         public int n_matched;
-        public List<Student> perma_unmatched;
+        public Dictionary<int, Student> perma_unmatched;
 
         public DASolution() { }
 
-        public List<(int, int)> GetMatching(List<Student> students)
+        public List<(int, int)> GetMatching(Dictionary<int, Student> students)
         {
             List<(int, int)> values = new List<(int, int)>();
-            foreach (Student student in students)
+            foreach (KeyValuePair<int, Student> item in students)
             {
-                if (student.match != -1)
+                if (item.Value.match != -1)
                 {
-                    (int, int) match = (student.match, student.student_id);
+                    (int, int) match = (item.Value.match, item.Value.student_id);
                     values.Add(match);
                 }
             }
@@ -31,22 +31,22 @@ namespace MatchingTest.Models
 
     public class EADAMSolution
     {
-        public List<Student> students;
-        public List<Hospital> hospitals;
+        public Dictionary<int, Student> students;
+        public Dictionary<int, Hospital> hospitals;
         public int n_iterations;
         public int n_matched;
         public DASolution initial_matching;
 
         public EADAMSolution() { }
 
-        public List<(int, int)> GetMatching(List<Student> students)
+        public List<(int, int)> GetMatching(Dictionary<int, Student> students)
         {
             List<(int, int)> values = new List<(int, int)>();
-            foreach (Student student in students)
+            foreach (KeyValuePair<int, Student> item in students)
             {
-                if (student.match != -1)
+                if (item.Value.match != -1)
                 {
-                    (int, int) match = (student.match, student.student_id);
+                    (int, int) match = (item.Value.match, item.Value.student_id);
                     values.Add(match);
                 }
             }

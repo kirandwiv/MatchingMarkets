@@ -21,12 +21,19 @@ namespace MatchingTest
             hospitals = solution.HospitalDict;
             preferences = solution.Preferences;
             Console.WriteLine(string.Join(", ", students[0].preferences));
-
+            
             var solver = new DA();
 
             var matching = solver.SolveDAExpress(students, hospitals, depth_of_list, preferences);
             Console.WriteLine(matching.n_matched);
             Console.WriteLine(matching.n_iterations);
+            Console.WriteLine(string.Join(", ", hospitals[0].match));
+
+            
+            var eadam = new EADAM();
+            var eadam_solution = eadam.solveEADAM(students, hospitals, depth_of_list, preferences);
+            eadam_solution.GetMatching(eadam_solution.students);
+            matching.GetMatching(matching.students);
         }
     }
 }

@@ -14,7 +14,7 @@ namespace MatchingTest.Machines
     {
         public DA() { }
 
-        public DASolution solveDA(List<Student> students, List<Hospital> hospitals, int depth_of_student_preferences)
+        public DASolution solveDA(Dictionary<int, Student> students, Dictionary<int, Hospital> hospitals, int depth_of_student_preferences)
         {
             bool exhausted = false;
             DASolution solution = new DASolution();
@@ -27,11 +27,12 @@ namespace MatchingTest.Machines
                 iteration++;
                 Console.WriteLine(iteration);
                 Console.WriteLine(n_matched);
-                foreach (Student student in students)
+                foreach (var studentEntry in students)
                 {
-                    if (!(student.IsUnmatched(depth_of_student_preferences)))
+                    Student student = studentEntry.Value;
+                    if (!student.IsUnmatched(depth_of_student_preferences))
                     {
-                        // For student, find proposal made.
+                        // For student, find proposal made.1
                         int proposes_to = student.preferences[student.rejections];
                         // Add that student to the hospitals list of proposals under consideration.
                         hospitals[proposes_to].proposals.Add(student.student_id);
@@ -48,8 +49,9 @@ namespace MatchingTest.Machines
                     }
                 }
                 //We now have a list of hospitals, each with proposals (or none).
-                foreach (Hospital hospital in hospitals)
+                foreach (var hospitalEntry in hospitals)
                 {
+                    Hospital hospital = hospitalEntry.Value;
                     // Three possibilities: no proposals, one proposal, many proposals.
 
                     //1. No proposal: nothing to update, continue.
@@ -166,10 +168,10 @@ namespace MatchingTest.Machines
                 tentatively_unmatched = new Dictionary<int, Student>(temp_list);
             }
 
-            solution.hospitals = hospitals.Values.ToList();
-            solution.students = students.Values.ToList();
+            solution.hospitals = hospitals;
+            solution.students = students;
             solution.n_iterations = iteration;
-            solution.perma_unmatched = permanently_unmatched.Values.ToList();
+            solution.perma_unmatched = permanently_unmatched;
             solution.n_matched = students.Count - permanently_unmatched.Count;
 
             return solution;
