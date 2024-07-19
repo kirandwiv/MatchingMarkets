@@ -32,7 +32,7 @@ namespace MatchingTest.Machines
             DA solver = new DA();
             DASolution initial_matching = solver.SolveDAExpress(students, hospitals, depth_of_student_preferences, preferences);
             solution.initial_matching = initial_matching;
-
+            Console.WriteLine("Initial Matching: " + initial_matching.n_matched);
             Dictionary<int, Hospital> hospitals_t = initial_matching.hospitals;
             Dictionary<int, Student> students_t = initial_matching.students;
 
@@ -48,7 +48,7 @@ namespace MatchingTest.Machines
                     if (hospital.rejected > 0)
                     {
                         // Get the student matched to this hospital.
-                        Student relevant_student = initial_matching.students[hospital.match];
+                        Student relevant_student = students_t[hospital.match];
                         // Reset the number of rejections for this hospital, as well as the number of rejections for the student. Essentially we want to start fresh but keep the preferences. 
                         hospital.rejected = 0;
                         hospital.match = -1;
@@ -67,11 +67,10 @@ namespace MatchingTest.Machines
                 DASolution matching_t = solver.SolveDAExpress(to_keep_students, to_keep_hospitals, depth_of_student_preferences, preferences);
                 // Update the hospitals list in hospital_t
                 hospitals_t = matching_t.hospitals;
+                // Update the students list in students_t
+                students_t = matching_t.students;
                 // Update the number of iterations:
                 solution.n_iterations += matching_t.n_iterations;
-                // Clear the to_keep_hospitals and to_keep_students lists.
-                to_keep_hospitals.Clear();
-                to_keep_students.Clear();
             }
 
             solution.students = students;

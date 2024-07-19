@@ -135,11 +135,20 @@ namespace MatchingTest.Machines
                         int proposes_to = student.preferences[student.rejections];
                         Hospital relevant_hospital = hospitals[proposes_to];
                         relevant_hospital.n_proposals_rd += 1;
+                        double priority_score = 0;
 
-                        Random random = new Random();
-                        double priority_score = random.NextDouble();
-                        relevant_hospital.priority_map.Add(student.student_id, priority_score);
-
+                        // Check if the hospital already has proposal from student, if not create score:
+                        if (!relevant_hospital.priority_map.ContainsKey(student.student_id))
+                        {
+                            Random random = new Random();
+                            priority_score = random.NextDouble();
+                            relevant_hospital.priority_map.Add(student.student_id, priority_score);
+                        }
+                        else
+                        {
+                            priority_score = relevant_hospital.priority_map[student.student_id];
+                        }
+                        // Check if the hospital has a match, if not assign student to hospital.
                         if (relevant_hospital.match == -1)
                         {
                             relevant_hospital.match = student.student_id;
