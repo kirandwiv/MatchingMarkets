@@ -107,7 +107,7 @@ namespace MatchingTest.Machines
             return solution;
         }
 
-        public DASolution SolveDAExpress(Dictionary<int, Student> students, Dictionary<int, Hospital> hospitals, int depth_of_student_preferences, Preferences_Result preferences)
+        public DASolution SolveDAExpress(Dictionary<int, Student> students, Dictionary<int, Hospital> hospitals, int depth_of_student_preferences)
         {
             DASolution solution = new DASolution();
             Dictionary<int, Student> tentatively_unmatched = new Dictionary<int, Student>(students);

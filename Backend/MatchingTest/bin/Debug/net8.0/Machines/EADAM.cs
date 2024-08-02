@@ -1,12 +1,16 @@
 ﻿using MatchingTest.Models;
 using MatchingTest.Machines;
 using System;
+using System.IO;
 using System.Collections.Generic;
 using System.ComponentModel.Design;
 using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Collections.Concurrent;
+using Newtonsoft.Json;
+using System.Reflection.Metadata;
 
 namespace MatchingTest.Machines
 {
@@ -14,7 +18,7 @@ namespace MatchingTest.Machines
     {
         public EADAM() { }
 
-        public EADAMSolution solveEADAM(Dictionary<int, Student> students, Dictionary<int, Hospital> hospitals, int depth_of_student_preferences, Preferences_Result preferences) 
+        public EADAMSolution solveEADAM(Dictionary<int, Student> students, Dictionary<int, Hospital> hospitals, int depth_of_student_preferences, string filename) 
         {
             
             // 1. Preference List is an input.
@@ -30,8 +34,19 @@ namespace MatchingTest.Machines
 
             // Run DA Solver for initial matching
             DA solver = new DA();
-            DASolution initial_matching = solver.SolveDAExpress(students, hospitals, depth_of_student_preferences, preferences);
-            solution.initial_matching = initial_matching;
+            DASolution initial_matching = solver.SolveDAExpress(students, hospitals, depth_of_student_preferences);
+            // solution.initial_matching = initial_matching;
+            // Save results to JSON
+            string path = "../../../../../Data/" + filename + ".json";
+            //inefficient but simple
+            //File.WriteAllText(path, JsonConvert.SerializeObject(results));
+            //stream directly to file
+            using (var stream = File.CreateText(path))
+            {
+                var serializer = new JsonSerializer();
+                serializer.Serialize(stream, initial_matching);
+            }
+            
             Console.WriteLine("Initial Matching: " + initial_matching.n_matched);
             Dictionary<int, Hospital> hospitals_t = initial_matching.hospitals;
             Dictionary<int, Student> students_t = initial_matching.students;
@@ -62,9 +77,9 @@ namespace MatchingTest.Machines
                         to_keep_students.Add(relevant_student.student_id, relevant_student);
                     }
                 }
-                Console.WriteLine("Hospitals/Agents Still in: " + to_keep_hospitals.Count);
+                // Console.WriteLine("Hospitals/Agents Still in: " + to_keep_hospitals.Count);
                 // We now have a list of hospitals and students that we want to run DA on again.
-                DASolution matching_t = solver.SolveDAExpress(to_keep_students, to_keep_hospitals, depth_of_student_preferences, preferences);
+                DASolution matching_t = solver.SolveDAExpress(to_keep_students, to_keep_hospitals, depth_of_student_preferences);
                 // Update the hospitals list in hospital_t
                 hospitals_t = matching_t.hospitals;
                 // Update the students list in students_t
@@ -77,6 +92,37 @@ namespace MatchingTest.Machines
             solution.hospitals = hospitals;
 
             return solution;
+        }
+
+        public ConcurrentBag<EADAMSolution> solveEADAMParallel(int number_of_students, int number_of_hospitals, int depth_of_list,  int n_sims, string filename)
+        {
+            var results = new ConcurrentBag<EADAMSolution>();
+            Parallel.For(0, n_sims, i =>
+            {
+                var preference_set = new RandomPreferenceSet();
+                var students = new Dictionary<int, Student>();
+                var hospitals = new Dictionary<int, Hospital>();
+                var preferences = new Preferences_Result();
+
+                var solution = preference_set.GeneratePreferences(number_of_students, number_of_hospitals, depth_of_list);
+                students = solution.StudentDict;
+                hospitals = solution.HospitalDict;
+
+                var eadam = new EADAM();
+                var eadam_solution = eadam.solveEADAM(students, hospitals, depth_of_list, filename);
+                results.Add(eadam_solution);
+            });
+            // Save results to JSON
+            string path = "../../../../../Data/" + filename + "_eadam" + ".json";
+            //inefficient but simple
+            //File.WriteAllText(path, JsonConvert.SerializeObject(results));
+            //stream directly to file
+            using (var stream = File.CreateText(path))
+            {
+                var serializer = new JsonSerializer();
+                serializer.Serialize(stream, results);
+            }
+            return results;
         }
     }
 }

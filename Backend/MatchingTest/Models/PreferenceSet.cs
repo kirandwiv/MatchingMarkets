@@ -102,14 +102,11 @@ namespace MatchingTest.Models
             for (int i = 0; i < number_of_hospitals; i++)
             {
                 List<int> numbers = Enumerable.Range(0, number_of_students).ToList(); // Corrected to range over students
-                Random rand = new Random();
-                List<int> selectedNumbers = numbers.OrderBy(x => rand.Next()).ToList();
 
                 // Create instance of hospital and add to dictionary
                 Hospital hospital = new Hospital
                 {
                     hospital_id = i,
-                    preferences = selectedNumbers
                 };
                 HospitalDict.Add(i, hospital);
             }
