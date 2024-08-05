@@ -1,5 +1,6 @@
 ﻿using MatchingTest.Models;
 using MatchingTest.Machines;
+using MatchingTest.Utilities;
 using System;
 using System.IO;
 using System.Collections.Generic;
@@ -16,7 +17,8 @@ namespace MatchingTest.Machines
 {
     public class EADAM
     {
-        public EADAM() { }
+        
+        public EADAM() {}
 
         public EADAMSolution solveEADAM(Dictionary<int, Student> students, Dictionary<int, Hospital> hospitals, int depth_of_student_preferences, string filename) 
         {
@@ -35,17 +37,8 @@ namespace MatchingTest.Machines
             // Run DA Solver for initial matching
             DA solver = new DA();
             DASolution initial_matching = solver.SolveDAExpress(students, hospitals, depth_of_student_preferences);
-            // solution.initial_matching = initial_matching;
-            // Save results to JSON
-            string path = "../../../../../Data/" + filename + ".json";
-            //inefficient but simple
-            //File.WriteAllText(path, JsonConvert.SerializeObject(results));
-            //stream directly to file
-            using (var stream = File.CreateText(path))
-            {
-                var serializer = new JsonSerializer();
-                serializer.Serialize(stream, initial_matching);
-            }
+            // Run GetMatching to get the matching list.
+            solution.da_matching_list = MatchingUtils.GetMatching(initial_matching.students);;
             
             Console.WriteLine("Initial Matching: " + initial_matching.n_matched);
             Dictionary<int, Hospital> hospitals_t = initial_matching.hospitals;
@@ -91,29 +84,41 @@ namespace MatchingTest.Machines
             solution.students = students;
             solution.hospitals = hospitals;
 
+            // Run GetMatching to get the matching list.
+            solution.eadam_matching_list = MatchingUtils.GetMatching(students);
+
             return solution;
         }
 
-        public ConcurrentBag<EADAMSolution> solveEADAMParallel(int number_of_students, int number_of_hospitals, int depth_of_list,  int n_sims, string filename)
+        public ConcurrentBag<Dictionary<string, object>> solveEADAMParallel(int number_of_students, int number_of_hospitals, int depth_of_list,  int n_sims, string filename)
         {
-            var results = new ConcurrentBag<EADAMSolution>();
+            var results = new ConcurrentBag<Dictionary<string, object>>();
             Parallel.For(0, n_sims, i =>
             {
                 var preference_set = new RandomPreferenceSet();
                 var students = new Dictionary<int, Student>();
                 var hospitals = new Dictionary<int, Hospital>();
-                var preferences = new Preferences_Result();
+                var preferences = new int[,] { };
+                var to_be_saved = new Dictionary<string, object>();
+                
 
                 var solution = preference_set.GeneratePreferences(number_of_students, number_of_hospitals, depth_of_list);
                 students = solution.StudentDict;
                 hospitals = solution.HospitalDict;
+                preferences = solution.Preferences.preference_array;
 
                 var eadam = new EADAM();
                 var eadam_solution = eadam.solveEADAM(students, hospitals, depth_of_list, filename);
-                results.Add(eadam_solution);
+
+                // Add relevant variables to the dictionary to be saved.
+                to_be_saved.Add("eadam_matching", eadam_solution.eadam_matching_list);
+                to_be_saved.Add("da_matching", eadam_solution.da_matching_list);
+                to_be_saved.Add("preference_array", preferences);
+
+                results.Add(to_be_saved);
             });
             // Save results to JSON
-            string path = "../../../../../Data/" + filename + "_eadam" + ".json";
+            string path = "../../Data/" + filename + "_eadam" + ".json";
             //inefficient but simple
             //File.WriteAllText(path, JsonConvert.SerializeObject(results));
             //stream directly to file

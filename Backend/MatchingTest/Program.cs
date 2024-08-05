@@ -1,25 +1,49 @@
-﻿using System.Collections.Concurrent;
-using MatchingTest.Models;
-using MatchingTest.Machines;
-using System.Text.Json;
+using System;
+using System.Reflection;
 
-namespace MatchingTest
+class Program
 {
-    internal class Program
+    static void Main(string[] args)
     {
-        static void NMain(string[] args)
+        if (args.Length == 0)
         {
-            int number_students = 300;
-            int number_hospitals = 300;
-            int depth_of_list = 15;
+            Console.WriteLine("Usage: Program <ClassName> [additional arguments]");
+            return;
+        }
 
-            int n_sims  = 2;
-            var results = new ConcurrentBag<EADAMSolution>(); // Assuming EADAMSolution is the type of eadam_solution
+        string className = args[0];
+        string[] classArgs = args[1..];
 
-            var eadam = new EADAM();
+        try
+        {
+            // Get the type of the class
+            Type type = Type.GetType($"MatchingTest.{className}");
+            if (type == null)
+            {
+                Console.WriteLine($"Class '{className}' not found.");
+                return;
+            }
 
-            results = eadam.solveEADAMParallel(number_students, number_hospitals, depth_of_list, n_sims, "results");
+            // Get the Main method of the class
+            MethodInfo mainMethod = type.GetMethod("Main", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static);
+            if (mainMethod == null)
+            {
+                Console.WriteLine($"Main method not found in class '{className}'.");
+                return;
+            }
 
+            // Invoke the Main method
+            mainMethod.Invoke(null, new object[] { classArgs });
+        }
+        catch (TargetInvocationException ex)
+        {
+            // Display the inner exception details
+            Console.WriteLine($"Error invoking Main method of class '{className}': {ex.InnerException?.Message}");
+            Console.WriteLine($"Stack Trace: {ex.InnerException?.StackTrace}");
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error invoking Main method of class '{className}': {ex.Message}");
         }
     }
 }

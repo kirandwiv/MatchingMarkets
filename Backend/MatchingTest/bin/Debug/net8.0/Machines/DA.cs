@@ -152,6 +152,7 @@ namespace MatchingTest.Machines
                         if (relevant_hospital.match == -1)
                         {
                             relevant_hospital.match = student.student_id;
+                            student.match = relevant_hospital.hospital_id;
                         }
                         else
                         {
@@ -163,6 +164,7 @@ namespace MatchingTest.Machines
                                 temp_list.Add(loser_student.student_id, loser_student);
 
                                 relevant_hospital.match = student.student_id;
+                                student.match = relevant_hospital.hospital_id;
                                 relevant_hospital.rejected += 1;
                             }
                             else

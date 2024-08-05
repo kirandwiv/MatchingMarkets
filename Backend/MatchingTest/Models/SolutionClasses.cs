@@ -37,20 +37,11 @@ namespace MatchingTest.Models
         public int n_matched;
         public DASolution initial_matching;
 
+        public int[,] da_matching_list;
+        public int[,] eadam_matching_list;
+
         public EADAMSolution() { }
 
-        public List<(int, int)> GetMatching(Dictionary<int, Student> students)
-        {
-            List<(int, int)> values = new List<(int, int)>();
-            foreach (KeyValuePair<int, Student> item in students)
-            {
-                if (item.Value.match != -1)
-                {
-                    (int, int) match = (item.Value.match, item.Value.student_id);
-                    values.Add(match);
-                }
-            }
-            return values;
-        }
     }
+
 }

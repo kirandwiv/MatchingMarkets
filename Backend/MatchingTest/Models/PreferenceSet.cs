@@ -54,9 +54,8 @@ namespace MatchingTest.Models
 
     public class Preferences_Result
     {
-        public double[,] priority_array;
-        public double[,] preference_array; 
-
+        public int[,] preference_array = new int[0, 0]; 
+    
         public Preferences_Result() { }
     }
 
@@ -74,7 +73,7 @@ namespace MatchingTest.Models
             Preferences_Result Preferences = new Preferences_Result();
 
             //Initiate the Preference Array
-            double[,] preference_array = new double[number_of_students, depth_student_preferences];
+            int[,] preference_array = new int[number_of_students, depth_student_preferences];
 
             for (int i = 0; i < number_of_students; i++)
             {
@@ -101,7 +100,7 @@ namespace MatchingTest.Models
             // Create list of hospitals
             for (int i = 0; i < number_of_hospitals; i++)
             {
-                List<int> numbers = Enumerable.Range(0, number_of_students).ToList(); // Corrected to range over students
+                // List<int> numbers = Enumerable.Range(0, number_of_students).ToList(); // Corrected to range over students
 
                 // Create instance of hospital and add to dictionary
                 Hospital hospital = new Hospital
