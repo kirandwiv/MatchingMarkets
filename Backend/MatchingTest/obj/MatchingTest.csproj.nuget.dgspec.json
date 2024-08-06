@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\v-kirdwivedi\\GitHub\\MatchingMarkets\\Backend\\MatchingTest\\MatchingTest.csproj": {}
+    "C:\\Users\\v-kirdwivedi\\Documents\\GitHub\\MatchingMarkets\\Backend\\MatchingTest\\MatchingTest.csproj": {}
   },
   "projects": {
-    "C:\\Users\\v-kirdwivedi\\GitHub\\MatchingMarkets\\Backend\\MatchingTest\\MatchingTest.csproj": {
+    "C:\\Users\\v-kirdwivedi\\Documents\\GitHub\\MatchingMarkets\\Backend\\MatchingTest\\MatchingTest.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\v-kirdwivedi\\GitHub\\MatchingMarkets\\Backend\\MatchingTest\\MatchingTest.csproj",
+        "projectUniqueName": "C:\\Users\\v-kirdwivedi\\Documents\\GitHub\\MatchingMarkets\\Backend\\MatchingTest\\MatchingTest.csproj",
         "projectName": "MatchingTest",
-        "projectPath": "C:\\Users\\v-kirdwivedi\\GitHub\\MatchingMarkets\\Backend\\MatchingTest\\MatchingTest.csproj",
+        "projectPath": "C:\\Users\\v-kirdwivedi\\Documents\\GitHub\\MatchingMarkets\\Backend\\MatchingTest\\MatchingTest.csproj",
         "packagesPath": "C:\\Users\\v-kirdwivedi\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\v-kirdwivedi\\GitHub\\MatchingMarkets\\Backend\\MatchingTest\\obj\\",
+        "outputPath": "C:\\Users\\v-kirdwivedi\\Documents\\GitHub\\MatchingMarkets\\Backend\\MatchingTest\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "C:\\Users\\v-kirdwivedi\\AppData\\Roaming\\NuGet\\NuGet.Config",

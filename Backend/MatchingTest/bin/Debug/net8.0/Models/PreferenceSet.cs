@@ -54,8 +54,8 @@ namespace MatchingTest.Models
 
     public class Preferences_Result
     {
-        public int[,] preference_array; 
-
+        public int[,] preference_array = new int[0, 0]; 
+    
         public Preferences_Result() { }
     }
 
