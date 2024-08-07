@@ -123,7 +123,7 @@ namespace MatchingTest.Machines
                 // Add relevant variables to the dictionary to be saved.
                 to_be_saved.Add("eadam_matching", eadam_solution.eadam_matching_list);
                 to_be_saved.Add("da_matching", eadam_solution.da_matching_list);
-                to_be_saved.Add("preference_array", preferences);
+                // to_be_saved.Add("preference_array", preferences);
 
                 results.Add(to_be_saved);
             });
