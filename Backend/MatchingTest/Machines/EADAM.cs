@@ -30,7 +30,7 @@ namespace MatchingTest.Machines
         
         public EADAM() {}
 
-        public EADAMSolution solveEADAM(Dictionary<int, Student> students, Dictionary<int, Hospital> hospitals, int depth_of_student_preferences, string filename) 
+        public EADAMSolution solveEADAM(Dictionary<int, Student> students, Dictionary<int, Hospital> hospitals, int depth_of_student_preferences) 
         {
             
             // 1. Preference List is an input.
@@ -100,7 +100,7 @@ namespace MatchingTest.Machines
             return solution;
         }
 
-        public List<EADAMoutput> Alternative(int number_of_students, int number_of_hospitals, int depth_of_list, int totalSims){
+        public List<EADAMoutput> Alternative(int number_of_students, int number_of_hospitals, int depth_of_list, int totalSims, string filename){
             
             var output=new List<EADAMoutput>();
             bool running=true;
@@ -119,7 +119,7 @@ namespace MatchingTest.Machines
             monitor.Start();
             //start workers
             for(int t=0;t<workers.Length;t++){
-                workers[t]=new Thread(delegate(object data){
+                workers[t]=new Thread(delegate(object? data){
                     int threadID=(int)data;
                     for(int i=threadID;i<totalSims;totalSims+=coreCount){
                         var preference_set = new RandomPreferenceSet();
@@ -138,8 +138,8 @@ namespace MatchingTest.Machines
                                 eadam_matchingList=eadam_solution.eadam_matching_list,
                                 da_matchingList=eadam_solution.da_matching_list,
                                 preferences=preferences
-                            })
-                        }
+                            });
+                        };
                         Interlocked.Increment(ref simsRun);
                     }
                 });
@@ -151,6 +151,17 @@ namespace MatchingTest.Machines
             }
             running=false;
             monitor.Join();
+
+            // Save results to JSON
+            string path = "../../Data/" + filename + "_eadam" + ".json";
+            //inefficient but simple
+            //File.WriteAllText(path, JsonConvert.SerializeObject(results));
+            //stream directly to file
+            using (var stream = File.CreateText(path))
+            {
+                var serializer = new JsonSerializer();
+                serializer.Serialize(stream, output);
+            }
             return output;
         }
 
@@ -182,7 +193,7 @@ namespace MatchingTest.Machines
                 preferences = solution.Preferences.preference_array;
 
                 var eadam = new EADAM();
-                var eadam_solution = eadam.solveEADAM(students, hospitals, depth_of_list, filename); // Remove Filename 
+                var eadam_solution = eadam.solveEADAM(students, hospitals, depth_of_list); // Remove Filename 
 
 
                 // Add relevant variables to the dictionary to be saved.

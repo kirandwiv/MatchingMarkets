@@ -25,11 +25,11 @@ namespace MatchingTest
 
             string filename = args[4];
             
-            var results = new ConcurrentBag<Dictionary<string, object>>(); // Assuming EADAMSolution is the type of eadam_solution
+            var results = new List<EADAMoutput>();
 
             var eadam = new EADAM();
 
-            results = eadam.solveEADAMParallel(number_students, number_hospitals, depth_of_list, n_sims, filename);
+            results = eadam.Alternative(number_students, number_hospitals, depth_of_list, n_sims, filename);
 
         }
     }
