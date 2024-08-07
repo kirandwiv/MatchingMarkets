@@ -93,7 +93,15 @@ namespace MatchingTest.Machines
         public ConcurrentBag<Dictionary<string, object>> solveEADAMParallel(int number_of_students, int number_of_hospitals, int depth_of_list,  int n_sims, string filename)
         {
             var results = new ConcurrentBag<Dictionary<string, object>>();
-            Parallel.For(0, n_sims, i =>
+
+            // Create an instance of ParallelOptions
+            var parallelOptions = new ParallelOptions
+            {
+                // Set the maximum degree of parallelism to the number of processors
+                MaxDegreeOfParallelism = Environment.ProcessorCount*3
+            };
+
+            Parallel.For(0, n_sims, parallelOptions, i =>
             {
                 var preference_set = new RandomPreferenceSet();
                 var students = new Dictionary<int, Student>();
