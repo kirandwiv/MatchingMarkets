@@ -12,9 +12,19 @@ using System.Threading.Tasks;
 using System.Collections.Concurrent;
 using Newtonsoft.Json;
 using System.Reflection.Metadata;
+using System.Security.Cryptography.X509Certificates;
 
 namespace MatchingTest.Machines
 {
+
+         public class EADAMoutput{
+            public int[,] eadam_matchingList;
+            public int[,] da_matchingList;
+            public int[,] preferences;
+
+        }
+
+
     public class EADAM
     {
         
@@ -90,6 +100,60 @@ namespace MatchingTest.Machines
             return solution;
         }
 
+        public List<EADAMoutput> Alternative(int number_of_students, int number_of_hospitals, int depth_of_list, int totalSims){
+            
+            var output=new List<EADAMoutput>();
+            bool running=true;
+            int simsRun=0;
+            int coreCount=Environment.ProcessorCount;
+            var workers=new Thread[coreCount];
+            Console.WriteLine("using {0} threads",coreCount);
+            var start=DateTimeOffset.UtcNow;
+            var monitor=new Thread(delegate(){
+                while(true){
+                    Console.Write("{0}/{1} sims done in {2:0.00} seconds\r",simsRun,totalSims,(DateTimeOffset.UtcNow-start).TotalSeconds);  
+                    if(!running) break;
+                    Thread.Sleep(1000);
+                }
+            });
+            monitor.Start();
+            //start workers
+            for(int t=0;t<workers.Length;t++){
+                workers[t]=new Thread(delegate(object data){
+                    int threadID=(int)data;
+                    for(int i=threadID;i<totalSims;totalSims+=coreCount){
+                        var preference_set = new RandomPreferenceSet();
+                        var students = new Dictionary<int, Student>();
+                        var hospitals = new Dictionary<int, Hospital>();
+                        var preferences = new int[,] { };
+                        var to_be_saved = new Dictionary<string, object>();                
+                        var solution = preference_set.GeneratePreferences(number_of_students, number_of_hospitals, depth_of_list);
+                        students = solution.StudentDict;
+                        hospitals = solution.HospitalDict;
+                        preferences = solution.Preferences.preference_array;
+                        var eadam = new EADAM();
+                        var eadam_solution = eadam.solveEADAM(students, hospitals, depth_of_list); // Remove Filename 
+                        lock(output){
+                            output.Add(new EADAMoutput(){
+                                eadam_matchingList=eadam_solution.eadam_matching_list,
+                                da_matchingList=eadam_solution.da_matching_list,
+                                preferences=preferences
+                            })
+                        }
+                        Interlocked.Increment(ref simsRun);
+                    }
+                });
+                workers[t].Start(t);
+            }
+            //wait for workers
+            for(int t=0;t<workers.Length;t++){
+                workers[t].Join();
+            }
+            running=false;
+            monitor.Join();
+            return output;
+        }
+
         public ConcurrentBag<Dictionary<string, object>> solveEADAMParallel(int number_of_students, int number_of_hospitals, int depth_of_list,  int n_sims, string filename)
         {
             var results = new ConcurrentBag<Dictionary<string, object>>();
@@ -108,7 +172,8 @@ namespace MatchingTest.Machines
                 preferences = solution.Preferences.preference_array;
 
                 var eadam = new EADAM();
-                var eadam_solution = eadam.solveEADAM(students, hospitals, depth_of_list, filename);
+                var eadam_solution = eadam.solveEADAM(students, hospitals, depth_of_list, filename); // Remove Filename 
+
 
                 // Add relevant variables to the dictionary to be saved.
                 to_be_saved.Add("eadam_matching", eadam_solution.eadam_matching_list);
