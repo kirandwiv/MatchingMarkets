@@ -58,7 +58,7 @@ namespace MatchingTest
             hospital4.priority_map = new Dictionary<int, double> { { 0, 2 }, { 1, 2 }, { 2, 3 }, { 3, 1 } };
             hospital_dict.Add(3, hospital4);
 
-            results = eadam.solveEADAM(student_dict, hospital_dict, depth_of_list, "test1");
+            results = eadam.solveEADAM(student_dict, hospital_dict, depth_of_list);
 
             Console.WriteLine(JsonConvert.SerializeObject(results));
 

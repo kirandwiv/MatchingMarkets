@@ -50,7 +50,7 @@ namespace MatchingTest.Machines
             // Run GetMatching to get the matching list.
             solution.da_matching_list = MatchingUtils.GetMatching(initial_matching.students);;
             
-            Console.WriteLine("Initial Matching: " + initial_matching.n_matched);
+            // Console.WriteLine("Initial Matching: " + initial_matching.n_matched);
             Dictionary<int, Hospital> hospitals_t = initial_matching.hospitals;
             Dictionary<int, Student> students_t = initial_matching.students;
 
@@ -100,63 +100,74 @@ namespace MatchingTest.Machines
             return solution;
         }
 
-        public List<EADAMoutput> Alternative(int number_of_students, int number_of_hospitals, int depth_of_list, int totalSims, string filename){
-            
-            var output=new List<EADAMoutput>();
-            bool running=true;
-            int simsRun=0;
-            int coreCount=Environment.ProcessorCount;
-            var workers=new Thread[coreCount];
-            Console.WriteLine("using {0} threads",coreCount);
-            var start=DateTimeOffset.UtcNow;
-            var monitor=new Thread(delegate(){
-                while(true){
-                    Console.Write("{0}/{1} sims done in {2:0.00} seconds\r",simsRun,totalSims,(DateTimeOffset.UtcNow-start).TotalSeconds);  
-                    if(!running) break;
+        public List<EADAMoutput> Alternative(int number_of_students, int number_of_hospitals, int depth_of_list, int totalSims, string filename)
+        {
+            var output = new List<EADAMoutput>();
+            bool running = true;
+            int simsRun = 0;
+            int coreCount = Environment.ProcessorCount;
+            var workers = new Thread[coreCount];
+            Console.WriteLine("using {0} threads", coreCount);
+            var start = DateTimeOffset.UtcNow;
+            var monitor = new Thread(delegate ()
+            {
+                while (true)
+                {
+                    Console.Write("{0}/{1} sims done in {2:0.00} seconds\r", simsRun, totalSims, (DateTimeOffset.UtcNow - start).TotalSeconds);
+                    if (!running) break;
                     Thread.Sleep(1000);
                 }
             });
             monitor.Start();
-            //start workers
-            for(int t=0;t<workers.Length;t++){
-                workers[t]=new Thread(delegate(object? data){
-                    int threadID=(int)data;
-                    for(int i=threadID;i<totalSims;totalSims+=coreCount){
+
+            // Start workers
+            for (int t = 0; t < workers.Length; t++)
+            {
+                workers[t] = new Thread(delegate ()
+                {
+                    while (true)
+                    {
+                        int currentSim = Interlocked.Increment(ref simsRun) - 1;
+                        if (currentSim >= totalSims)
+                        {
+                            break;
+                        }
+
                         var preference_set = new RandomPreferenceSet();
                         var students = new Dictionary<int, Student>();
                         var hospitals = new Dictionary<int, Hospital>();
                         var preferences = new int[,] { };
-                        var to_be_saved = new Dictionary<string, object>();                
+                        var to_be_saved = new Dictionary<string, object>();
                         var solution = preference_set.GeneratePreferences(number_of_students, number_of_hospitals, depth_of_list);
                         students = solution.StudentDict;
                         hospitals = solution.HospitalDict;
-                        preferences = solution.Preferences.preference_array;
+                        // preferences = solution.Preferences.preference_array;
                         var eadam = new EADAM();
-                        var eadam_solution = eadam.solveEADAM(students, hospitals, depth_of_list); // Remove Filename 
-                        lock(output){
-                            output.Add(new EADAMoutput(){
-                                eadam_matchingList=eadam_solution.eadam_matching_list,
-                                da_matchingList=eadam_solution.da_matching_list,
-                                preferences=preferences
+                        var eadam_solution = eadam.solveEADAM(students, hospitals, depth_of_list); // Remove Filename
+                        lock (output)
+                        {
+                            output.Add(new EADAMoutput()
+                            {
+                                eadam_matchingList = eadam_solution.eadam_matching_list,
+                                da_matchingList = eadam_solution.da_matching_list,
+                                // preferences = preferences
                             });
-                        };
-                        Interlocked.Increment(ref simsRun);
+                        }
                     }
                 });
-                workers[t].Start(t);
+                workers[t].Start();
             }
-            //wait for workers
-            for(int t=0;t<workers.Length;t++){
+
+            // Wait for workers
+            for (int t = 0; t < workers.Length; t++)
+            {
                 workers[t].Join();
             }
-            running=false;
+            running = false;
             monitor.Join();
 
             // Save results to JSON
             string path = "../../Data/" + filename + "_eadam" + ".json";
-            //inefficient but simple
-            //File.WriteAllText(path, JsonConvert.SerializeObject(results));
-            //stream directly to file
             using (var stream = File.CreateText(path))
             {
                 var serializer = new JsonSerializer();
@@ -164,56 +175,57 @@ namespace MatchingTest.Machines
             }
             return output;
         }
+    }
 
-        public ConcurrentBag<Dictionary<string, object>> solveEADAMParallel(int number_of_students, int number_of_hospitals, int depth_of_list,  int n_sims, string filename)
-        {
-            var results = new ConcurrentBag<Dictionary<string, object>>();
-            // Set the minimum number of threads in the ThreadPool
-            ThreadPool.SetMinThreads(Environment.ProcessorCount * 3, Environment.ProcessorCount * 3);
+    //     public ConcurrentBag<Dictionary<string, object>> solveEADAMParallel(int number_of_students, int number_of_hospitals, int depth_of_list,  int n_sims, string filename)
+    //     {
+    //         var results = new ConcurrentBag<Dictionary<string, object>>();
+    //         // Set the minimum number of threads in the ThreadPool
+    //         ThreadPool.SetMinThreads(Environment.ProcessorCount * 3, Environment.ProcessorCount * 3);
 
-            // Create an instance of ParallelOptions
-            var parallelOptions = new ParallelOptions
-            {
-                // Set the maximum degree of parallelism to the number of processors
-                MaxDegreeOfParallelism = Environment.ProcessorCount*3
-            };
+    //         // Create an instance of ParallelOptions
+    //         var parallelOptions = new ParallelOptions
+    //         {
+    //             // Set the maximum degree of parallelism to the number of processors
+    //             MaxDegreeOfParallelism = Environment.ProcessorCount*3
+    //         };
 
-            Parallel.For(0, n_sims, parallelOptions, i =>
-            {
-                var preference_set = new RandomPreferenceSet();
-                var students = new Dictionary<int, Student>();
-                var hospitals = new Dictionary<int, Hospital>();
-                var preferences = new int[,] { };
-                var to_be_saved = new Dictionary<string, object>();
+    //         Parallel.For(0, n_sims, parallelOptions, i =>
+    //         {
+    //             var preference_set = new RandomPreferenceSet();
+    //             var students = new Dictionary<int, Student>();
+    //             var hospitals = new Dictionary<int, Hospital>();
+    //             var preferences = new int[,] { };
+    //             var to_be_saved = new Dictionary<string, object>();
                 
 
-                var solution = preference_set.GeneratePreferences(number_of_students, number_of_hospitals, depth_of_list);
-                students = solution.StudentDict;
-                hospitals = solution.HospitalDict;
-                preferences = solution.Preferences.preference_array;
+    //             var solution = preference_set.GeneratePreferences(number_of_students, number_of_hospitals, depth_of_list);
+    //             students = solution.StudentDict;
+    //             hospitals = solution.HospitalDict;
+    //             preferences = solution.Preferences.preference_array;
 
-                var eadam = new EADAM();
-                var eadam_solution = eadam.solveEADAM(students, hospitals, depth_of_list); // Remove Filename 
+    //             var eadam = new EADAM();
+    //             var eadam_solution = eadam.solveEADAM(students, hospitals, depth_of_list); // Remove Filename 
 
 
-                // Add relevant variables to the dictionary to be saved.
-                to_be_saved.Add("eadam_matching", eadam_solution.eadam_matching_list);
-                to_be_saved.Add("da_matching", eadam_solution.da_matching_list);
-                // to_be_saved.Add("preference_array", preferences);
+    //             // Add relevant variables to the dictionary to be saved.
+    //             to_be_saved.Add("eadam_matching", eadam_solution.eadam_matching_list);
+    //             to_be_saved.Add("da_matching", eadam_solution.da_matching_list);
+    //             // to_be_saved.Add("preference_array", preferences);
 
-                results.Add(to_be_saved);
-            });
-            // Save results to JSON
-            string path = "../../Data/" + filename + "_eadam" + ".json";
-            //inefficient but simple
-            //File.WriteAllText(path, JsonConvert.SerializeObject(results));
-            //stream directly to file
-            using (var stream = File.CreateText(path))
-            {
-                var serializer = new JsonSerializer();
-                serializer.Serialize(stream, results);
-            }
-            return results;
-        }
-    }
+    //             results.Add(to_be_saved);
+    //         });
+    //         // Save results to JSON
+    //         string path = "../../Data/" + filename + "_eadam" + ".json";
+    //         //inefficient but simple
+    //         //File.WriteAllText(path, JsonConvert.SerializeObject(results));
+    //         //stream directly to file
+    //         using (var stream = File.CreateText(path))
+    //         {
+    //             var serializer = new JsonSerializer();
+    //             serializer.Serialize(stream, results);
+    //         }
+    //         return results;
+    //     }
+    // }
 }
