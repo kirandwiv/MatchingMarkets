@@ -25,7 +25,7 @@ namespace MatchingTest
 
             string filename = args[4];
             
-            var results = new List<EADAMoutput>();
+            var results = new List<List<int[,]>>();
 
             var eadam = new EADAM();
 

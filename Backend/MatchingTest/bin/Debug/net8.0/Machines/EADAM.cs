@@ -53,9 +53,11 @@ namespace MatchingTest.Machines
             // Console.WriteLine("Initial Matching: " + initial_matching.n_matched);
             Dictionary<int, Hospital> hospitals_t = initial_matching.hospitals;
             Dictionary<int, Student> students_t = initial_matching.students;
+            solution.n_iterations += 1;
 
             while (hospitals_t.Count > 0)
             {
+                solution.n_iterations += 1;
                 // Remove Underdemanded Hospitals + Their Matchings. Keep only oversubscribed hospitals and their matchings.
                 Dictionary<int, Hospital> to_keep_hospitals = new Dictionary<int, Hospital>();
                 Dictionary<int, Student> to_keep_students = new Dictionary<int, Student>();
@@ -87,8 +89,6 @@ namespace MatchingTest.Machines
                 hospitals_t = matching_t.hospitals;
                 // Update the students list in students_t
                 students_t = matching_t.students;
-                // Update the number of iterations:
-                solution.n_iterations += matching_t.n_iterations;
             }
 
             solution.students = students;
@@ -100,9 +100,9 @@ namespace MatchingTest.Machines
             return solution;
         }
 
-        public List<EADAMoutput> Alternative(int number_of_students, int number_of_hospitals, int depth_of_list, int totalSims, string filename)
+        public List<List<int [,]>> Alternative(int number_of_students, int number_of_hospitals, int depth_of_list, int totalSims, string filename)
         {
-            var output = new List<EADAMoutput>();
+            var output = new List<List<int [,]>>();
             bool running = true;
             int simsRun = 0;
             int coreCount = Environment.ProcessorCount;
@@ -134,6 +134,7 @@ namespace MatchingTest.Machines
                         }
 
                         var preference_set = new RandomPreferenceSet();
+                        List<int [,]> matchings = new List<int [,]>();
                         var students = new Dictionary<int, Student>();
                         var hospitals = new Dictionary<int, Hospital>();
                         var preferences = new int[,] { };
@@ -143,15 +144,15 @@ namespace MatchingTest.Machines
                         hospitals = solution.HospitalDict;
                         // preferences = solution.Preferences.preference_array;
                         var eadam = new EADAM();
-                        var eadam_solution = eadam.solveEADAM(students, hospitals, depth_of_list); // Remove Filename
+                        var eadam_solution = eadam.solveEADAM(students, hospitals, depth_of_list);
+                        matchings.Add(eadam_solution.da_matching_list);
+                        matchings.Add(eadam_solution.eadam_matching_list);
+                        int[,] iterationsArray = new int[1, 1];
+                        iterationsArray[0, 0] = eadam_solution.n_iterations;
+                        matchings.Add(iterationsArray);
                         lock (output)
                         {
-                            output.Add(new EADAMoutput()
-                            {
-                                eadam_matchingList = eadam_solution.eadam_matching_list,
-                                da_matchingList = eadam_solution.da_matching_list,
-                                // preferences = preferences
-                            });
+                            output.Add(matchings);
                         }
                     }
                 });
@@ -167,11 +168,18 @@ namespace MatchingTest.Machines
             monitor.Join();
 
             // Save results to JSON
-            string path = "../../Data/" + filename + "_eadam" + ".json";
-            using (var stream = File.CreateText(path))
+            string path = "../../Data/" + filename + "_eadam" + ".csv";
+            using (var stream = new StreamWriter(path))
             {
-                var serializer = new JsonSerializer();
-                serializer.Serialize(stream, output);
+                // Write Header
+                stream.WriteLine("sim,student,DA,EADAM,iterations");
+                for (int i = 0; i < output.Count; i++)
+                {
+                    for (int j = 0; j< number_of_students; j++)
+                    {
+                        stream.WriteLine(i + "," + j + "," + output[i][0][j, 1] + "," + output[i][1][j, 1] + "," + output[i][2][0, 0]);
+                    }
+                }
             }
             return output;
         }
