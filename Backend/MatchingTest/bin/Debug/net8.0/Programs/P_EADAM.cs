@@ -25,12 +25,11 @@ namespace MatchingTest
 
             string filename = args[4];
             
-            var results = new List<List<int[,]>>();
+            var results = new List<List<int>>();
 
             var eadam = new EADAM();
 
-            results = eadam.Alternative(number_students, number_hospitals, depth_of_list, n_sims, filename);
-
+            results = eadam.ParEADAM_simsum(number_students, number_hospitals, depth_of_list, n_sims, filename);
         }
     }
 }

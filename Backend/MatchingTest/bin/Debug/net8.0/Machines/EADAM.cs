@@ -183,6 +183,93 @@ namespace MatchingTest.Machines
             }
             return output;
         }
+
+        public List<List<int>> ParEADAM_simsum(int number_of_students, int number_of_hospitals, int depth_of_list, int totalSims, string filename)
+        {
+            var output = new List<List<int>>();
+            bool running = true;
+            int simsRun = 0;
+            int coreCount = Environment.ProcessorCount;
+            var workers = new Thread[coreCount];
+            Console.WriteLine("using {0} threads", coreCount);
+            var start = DateTimeOffset.UtcNow;
+            var monitor = new Thread(delegate ()
+            {
+                while (true)
+                {
+                    Console.Write("{0}/{1} sims done in {2:0.00} seconds\r", simsRun, totalSims, (DateTimeOffset.UtcNow - start).TotalSeconds);
+                    if (!running) break;
+                    Thread.Sleep(1000);
+                }
+            });
+            monitor.Start();
+
+            // Start workers
+            for (int t = 0; t < workers.Length; t++)
+            {
+                workers[t] = new Thread(delegate ()
+                {
+                    while (true)
+                    {
+                        int currentSim = Interlocked.Increment(ref simsRun) - 1;
+                        if (currentSim >= totalSims)
+                        {
+                            break;
+                        }
+
+                        // Initialize Variables
+                        var preference_set = new RandomPreferenceSet();
+                        List<int> sim_results = new List<int>();
+                        var students = new Dictionary<int, Student>();
+                        var hospitals = new Dictionary<int, Hospital>();
+                        var preferences = new int[,] { };
+                        var to_be_saved = new Dictionary<string, object>();
+
+                        // Create Preferences
+                        var solution = preference_set.GeneratePreferences(number_of_students, number_of_hospitals, depth_of_list);
+                        students = solution.StudentDict;
+                        hospitals = solution.HospitalDict;
+                        // preferences = solution.Preferences.preference_array;
+                        
+                        // Solve EADAM
+                        var eadam = new EADAM();
+                        var eadam_solution = eadam.solveEADAM(students, hospitals, depth_of_list);
+                        
+                        var (n_differences, n_unmatched) = MatchingUtils.NDifferences(eadam_solution.da_matching_list, eadam_solution.eadam_matching_list);
+                        sim_results.Add(n_differences);
+                        sim_results.Add(n_unmatched);
+                        sim_results.Add(eadam_solution.n_iterations);
+                        // Add to output
+                        lock (output)
+                        {
+                            output.Add(sim_results);
+                        }
+                    }
+                });
+                workers[t].Start();
+            }
+
+            // Wait for workers
+            for (int t = 0; t < workers.Length; t++)
+            {
+                workers[t].Join();
+            }
+            running = false;
+            monitor.Join();
+
+            // Save results to JSON
+            string path = "../../Data/" + filename + "_eadam" + ".csv";
+            using (var stream = new StreamWriter(path))
+            {
+                // Write Header
+                stream.WriteLine("sim,n,k,n_differences,n_unmatched,n_iterations");
+                for (int i = 0; i < output.Count; i++)
+                {
+                    stream.WriteLine(i + "," + number_of_students + "," + depth_of_list + "," + output[i][0] + "," + output[i][1] + "," + output[i][2]);
+                }
+            }
+            return output;
+        }
     }
 
     //     public ConcurrentBag<Dictionary<string, object>> solveEADAMParallel(int number_of_students, int number_of_hospitals, int depth_of_list,  int n_sims, string filename)
