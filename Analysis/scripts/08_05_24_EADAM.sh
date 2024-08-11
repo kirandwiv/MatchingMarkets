@@ -3,9 +3,9 @@
 cd ../../Backend/MatchingTest
 
 # Define arrays for different values of n and k
-n_values=(1000 2000 3000 4000 5000 6000 7000 8000 9000 10000 11000 12000)
-k_values=(3 4 5 6 7 8)
-n_sims=1000
+n_values=(100000)
+k_values=(4 6)
+n_sims=100
 today=$(date +%Y-%m-%d)
 
 # Iterate over each combination of n and k

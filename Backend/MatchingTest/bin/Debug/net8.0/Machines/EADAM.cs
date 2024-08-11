@@ -186,28 +186,27 @@ namespace MatchingTest.Machines
 
         public List<List<int>> ParEADAM_simsum(int number_of_students, int number_of_hospitals, int depth_of_list, int totalSims, string filename)
         {
-            var output = new List<List<int>>();
-            bool running = true;
+            var output = new ConcurrentBag<List<int>>();
             int simsRun = 0;
             int coreCount = Environment.ProcessorCount;
-            var workers = new Thread[coreCount];
             Console.WriteLine("using {0} threads", coreCount);
             var start = DateTimeOffset.UtcNow;
-            var monitor = new Thread(delegate ()
+
+            // Monitor Task
+            var monitor = Task.Run(() =>
             {
-                while (true)
+                while (simsRun < totalSims)
                 {
                     Console.Write("{0}/{1} sims done in {2:0.00} seconds\r", simsRun, totalSims, (DateTimeOffset.UtcNow - start).TotalSeconds);
-                    if (!running) break;
                     Thread.Sleep(1000);
                 }
             });
-            monitor.Start();
 
-            // Start workers
-            for (int t = 0; t < workers.Length; t++)
+            // Worker Tasks
+            var tasks = new List<Task>();
+            for (int t = 0; t < coreCount; t++)
             {
-                workers[t] = new Thread(delegate ()
+                tasks.Add(Task.Run(() =>
                 {
                     while (true)
                     {
@@ -222,53 +221,45 @@ namespace MatchingTest.Machines
                         List<int> sim_results = new List<int>();
                         var students = new Dictionary<int, Student>();
                         var hospitals = new Dictionary<int, Hospital>();
-                        var preferences = new int[,] { };
-                        var to_be_saved = new Dictionary<string, object>();
 
                         // Create Preferences
                         var solution = preference_set.GeneratePreferences(number_of_students, number_of_hospitals, depth_of_list);
                         students = solution.StudentDict;
                         hospitals = solution.HospitalDict;
-                        // preferences = solution.Preferences.preference_array;
-                        
+
                         // Solve EADAM
                         var eadam = new EADAM();
                         var eadam_solution = eadam.solveEADAM(students, hospitals, depth_of_list);
-                        
+
                         var (n_differences, n_unmatched) = MatchingUtils.NDifferences(eadam_solution.da_matching_list, eadam_solution.eadam_matching_list);
                         sim_results.Add(n_differences);
                         sim_results.Add(n_unmatched);
                         sim_results.Add(eadam_solution.n_iterations);
+
                         // Add to output
-                        lock (output)
-                        {
-                            output.Add(sim_results);
-                        }
+                        output.Add(sim_results);
                     }
-                });
-                workers[t].Start();
+                }));
             }
 
-            // Wait for workers
-            for (int t = 0; t < workers.Length; t++)
-            {
-                workers[t].Join();
-            }
-            running = false;
-            monitor.Join();
+            // Wait for all tasks to complete
+            Task.WaitAll(tasks.ToArray());
+            monitor.Wait();
 
-            // Save results to JSON
+            // Save results to CSV
             string path = "../../Data/" + filename + "_eadam" + ".csv";
             using (var stream = new StreamWriter(path))
             {
                 // Write Header
                 stream.WriteLine("sim,n,k,n_differences,n_unmatched,n_iterations");
-                for (int i = 0; i < output.Count; i++)
+                int i = 0;
+                foreach (var result in output)
                 {
-                    stream.WriteLine(i + "," + number_of_students + "," + depth_of_list + "," + output[i][0] + "," + output[i][1] + "," + output[i][2]);
+                    stream.WriteLine($"{i},{number_of_students},{depth_of_list},{result[0]},{result[1]},{result[2]}");
+                    i++;
                 }
             }
-            return output;
+            return output.ToList();
         }
     }
 
